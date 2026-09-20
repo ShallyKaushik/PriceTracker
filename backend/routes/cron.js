@@ -22,7 +22,7 @@ router.post("/scrape", async (req, res) => {
     if (trackError) throw trackError;
 
     if (!trackedProducts || trackedProducts.length === 0) {
-      return res.json({ success: true, message: "No active tracked products", total: 0, successful: 0, failed: 0 });
+      return res.json({ success: true, processed: 0, succeeded: 0, failed: 0 });
     }
 
     const runId = crypto.randomUUID();
@@ -105,11 +105,9 @@ router.post("/scrape", async (req, res) => {
 
     res.json({
       success: true,
-      runId,
-      total: results.length,
-      successful,
-      failed,
-      results,
+      processed: results.length,
+      succeeded: successful,
+      failed: failed,
     });
 
   } catch (error) {
