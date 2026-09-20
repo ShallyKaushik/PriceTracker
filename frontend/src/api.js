@@ -37,3 +37,8 @@ export function scrapeTrackedProduct(trackedId) {
   });
 }
 
+export function untrackProduct(trackedId) {
+  return request(`/api/tracked-products/${trackedId}`, {
+    method: "DELETE"
+  });
+}

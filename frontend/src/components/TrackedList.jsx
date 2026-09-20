@@ -1,6 +1,6 @@
 import { formatPrice, formatStock, formatDate } from "../utils";
 
-export default function TrackedList({ products, selectedId, onSelect }) {
+export default function TrackedList({ products, selectedId, onSelect, onUntrack }) {
   if (products.length === 0) {
     return (
       <section className="section">
@@ -39,9 +39,21 @@ export default function TrackedList({ products, selectedId, onSelect }) {
                   <td>{latest ? formatStock(latest.stock) : <span className="no-data">—</span>}</td>
                   <td className="meta">{latest ? formatDate(latest.scraped_at) : "—"}</td>
                   <td>
-                    <button className="btn-view" onClick={() => onSelect(t.id)}>
-                      {selectedId === t.id ? "Viewing" : "View"}
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button className="btn-view" onClick={() => onSelect(t.id)}>
+                        {selectedId === t.id ? "Viewing" : "View"}
+                      </button>
+                      <button 
+                        className="btn-remove" 
+                        onClick={() => {
+                          if (window.confirm('Are you sure you want to stop tracking this product?')) {
+                            onUntrack(t.id);
+                          }
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </td>
                 </tr>
               );

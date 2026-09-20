@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import SearchPanel from "./components/SearchPanel";
 import TrackedList from "./components/TrackedList";
 import ProductDashboard from "./components/ProductDashboard";
-import { getTrackedProducts, getHistory } from "./api";
+import { getTrackedProducts, getHistory, untrackProduct } from "./api";
 import "./App.css";
 
 export default function App() {
@@ -41,6 +41,19 @@ export default function App() {
 
   const selectedTracked = tracked.find((t) => t.id === selectedId);
 
+  async function handleUntrack(id) {
+    try {
+      await untrackProduct(id);
+      if (selectedId === id) {
+        setSelectedId(null);
+      }
+      loadTracked();
+    } catch (err) {
+      console.error("Failed to untrack:", err);
+      alert("Failed to remove product.");
+    }
+  }
+
   return (
     <div className="app">
       <header className="header">
@@ -71,6 +84,7 @@ export default function App() {
                 products={tracked}
                 selectedId={selectedId}
                 onSelect={(id) => setSelectedId(id === selectedId ? null : id)}
+                onUntrack={handleUntrack}
               />
             )}
           </div>

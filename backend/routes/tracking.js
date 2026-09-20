@@ -166,4 +166,20 @@ router.post("/:id/scrape", async (req, res) => {
   }
 });
 
+// DELETE /api/tracked-products/:id
+router.delete("/:id", async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from("tracked_products")
+      .delete()
+      .eq("id", req.params.id);
+
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting tracked product:", error);
+    res.status(500).json({ error: "Failed to delete tracked product" });
+  }
+});
+
 module.exports = router;

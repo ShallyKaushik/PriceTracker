@@ -262,6 +262,20 @@ body {
   cursor: pointer;
 }
 
+.btn-remove {
+  padding: 5px 12px;
+  background: #fff;
+  color: #dc2626;
+  border: 1px solid #dc2626;
+  border-radius: 5px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.btn-remove:hover {
+  background: #fef2f2;
+}
+
 /* Dashboard stats */
 .stat-row {
   display: flex;
