@@ -42,7 +42,14 @@ export default function SearchPanel({ onTracked, trackedProducts = [], onSelect 
     }
   }
 
+  function clearSearch() {
+    setQuery("");
+    setResults([]);
+    setSearchError("");
+  }
+
   async function handleTrack(product) {
+    clearSearch();
     setTracking((t) => ({ ...t, [product.id]: "loading" }));
     try {
       const trackedData = await trackProduct(product.id);
@@ -101,7 +108,10 @@ export default function SearchPanel({ onTracked, trackedProducts = [], onSelect 
                 {isTracked && trackedMatch ? (
                   <button
                     className="btn-view"
-                    onClick={() => onSelect(trackedMatch.id)}
+                    onClick={() => {
+                      onSelect(trackedMatch.id);
+                      clearSearch();
+                    }}
                   >
                     View
                   </button>
