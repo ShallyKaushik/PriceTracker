@@ -25,13 +25,12 @@ router.get("/search", async (req, res) => {
       for (const p of localData) {
         if (!seen.has(p.external_id)) {
           seen.add(p.external_id);
-          matched.push({
-            id: p.external_id,
-            name: p.name,
-            sku: p.sku || "",
-            brand: p.sku ? p.sku.split("-")[0] : "",
-            category: "Tracked"
-          });
+            matched.push({
+              id: p.external_id,
+              name: p.name,
+              sku: p.sku || "",
+              brand: p.sku ? p.sku.split("-")[0] : ""
+            });
         }
       }
     }

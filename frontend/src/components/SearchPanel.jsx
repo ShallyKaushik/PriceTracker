@@ -119,9 +119,9 @@ export default function SearchPanel({ onTracked, trackedProducts = [], onSelect 
                   <button
                     className={`btn-track ${isTracked ? "tracked" : ""}`}
                     onClick={() => handleTrack(p)}
-                    disabled={state === "loading" || state === "scraping" || isTracked || p.category === "Tracked"}
+                    disabled={state === "loading" || state === "scraping" || isTracked}
                   >
-                    {p.category === "Tracked" || isTracked ? "Tracked" :
+                    {isTracked ? "Tracked" :
                      state === "loading" || state === "scraping" ? "Tracking..." :
                      state === "error" ? "Retry" :
                      "Track"}
