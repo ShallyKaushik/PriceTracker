@@ -54,7 +54,11 @@ export default function App() {
       </header>
 
       <main className="main">
-        <SearchPanel onTracked={loadTracked} />
+        <SearchPanel 
+          onTracked={loadTracked} 
+          trackedProducts={tracked}
+          onSelect={(id) => setSelectedId(id === selectedId ? null : id)}
+        />
 
         {loadingTracked ? (
           <section className="section">

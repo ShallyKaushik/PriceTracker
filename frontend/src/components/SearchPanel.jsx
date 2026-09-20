@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { searchProducts, trackProduct, scrapeTrackedProduct } from "../api";
 
-export default function SearchPanel({ onTracked }) {
+export default function SearchPanel({ onTracked, trackedProducts = [], onSelect }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
@@ -86,22 +86,37 @@ export default function SearchPanel({ onTracked }) {
         <div className="results-list">
           {results.map((p) => {
             const state = tracking[p.id];
+            
+            // Check if this product is already in our tracked list from the database
+            const trackedMatch = trackedProducts.find(t => t.products?.external_id === p.id);
+            const isTracked = !!trackedMatch || state === "done";
+
             return (
               <div key={p.id} className="result-card">
                 <div className="result-info">
                   <strong>{p.name}</strong>
                   <span className="meta">SKU: {p.sku || "—"}</span>
                 </div>
-                <button
-                  className={`btn-track ${state === "done" ? "tracked" : ""}`}
-                  onClick={() => handleTrack(p)}
-                  disabled={state === "loading" || state === "scraping" || state === "done" || p.category === "Tracked"}
-                >
-                  {p.category === "Tracked" || state === "done" ? "Tracked" :
-                   state === "loading" || state === "scraping" ? "Tracking..." :
-                   state === "error" ? "Retry" :
-                   "Track"}
-                </button>
+                
+                {isTracked && trackedMatch ? (
+                  <button
+                    className="btn-view"
+                    onClick={() => onSelect(trackedMatch.id)}
+                  >
+                    View
+                  </button>
+                ) : (
+                  <button
+                    className={`btn-track ${isTracked ? "tracked" : ""}`}
+                    onClick={() => handleTrack(p)}
+                    disabled={state === "loading" || state === "scraping" || isTracked || p.category === "Tracked"}
+                  >
+                    {p.category === "Tracked" || isTracked ? "Tracked" :
+                     state === "loading" || state === "scraping" ? "Tracking..." :
+                     state === "error" ? "Retry" :
+                     "Track"}
+                  </button>
+                )}
               </div>
             );
           })}
