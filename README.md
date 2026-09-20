@@ -1,33 +1,78 @@
 # INE Price Tracker
 
-A full-stack product price and stock tracker built with Node.js, Express, Playwright, React, and Supabase.
+A full-stack application built for the INE Software Engineer Intern Assignment. The platform enables users to search for products on the INE mock store, track them, and automatically scrape their current prices and stock availability on a recurring schedule.
 
-## Cron Job Configuration (cron-job.org)
+## Architecture
 
-To ensure tracked products are automatically scraped every 2 hours (especially when hosted on free tiers like Render that can sleep), you must set up an external cron job via [cron-job.org](https://cron-job.org/).
+* **Frontend:** React (Vite)
+* **Backend:** Node.js (Express), Playwright (for scraping)
+* **Database:** Supabase (PostgreSQL)
+* **Deployment:** Vercel (Frontend), Render (Backend)
 
-### Steps
+---
 
-1. Create a free account at cron-job.org and create a new cron job.
-2. **Title**: `INE Price Tracker - 2 Hour Scrape`
-3. **URL**: `https://YOUR-RENDER-BACKEND.onrender.com/api/cron/scrape` (replace with your actual backend domain)
-4. **Schedule**: Select "Every 2 hours".
-5. **Advanced settings -> HTTP Method**: Change to `POST`.
-6. **Advanced settings -> Headers**:
-   Add a new header:
-   - **Key**: `Authorization`
-   - **Value**: `Bearer YOUR_CRON_SECRET`
-   
-   *(Ensure that `YOUR_CRON_SECRET` exactly matches the `CRON_SECRET` environment variable defined in your backend on Render. Keep this secret strictly private and do NOT expose it to the React frontend).*
+## Environment Variables Required
 
-7. Save and enable the cron job.
+To run this project locally or deploy it, you will need to configure the following environment variables.
 
-### Manual Testing
-You can manually test the cron execution by running the following command in your terminal (make sure your local backend is running):
+### Backend (`backend/.env`)
 
-```bash
-curl -X POST http://localhost:3000/api/cron/scrape \
-  -H "Authorization: Bearer YOUR_CRON_SECRET"
+```env
+PORT=3000
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+CRON_SECRET=a_secure_random_string_for_cron_auth
+MAX_ATTEMPTS=4
+```
+*(Note for Render deployment: You must also set `PLAYWRIGHT_BROWSERS_PATH=0` in your Render Environment Variables so that the Playwright binary is cached correctly inside `node_modules`)*
+
+### Frontend (`frontend/.env`)
+
+```env
+VITE_API_URL=http://localhost:3000  # Change to your Render URL in production
 ```
 
-This will instantly trigger the scraping sequence for all active tracked products and insert the latest values into your `price_history` database table, as well as logging the run in `scrape_logs`.
+---
+
+## Setup Instructions (Local Development)
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/ShallyKaushik/PriceTracker.git
+   cd PriceTracker
+   ```
+
+2. **Set up the Database (Supabase):**
+   * Create a new Supabase project.
+   * Execute the SQL schema (found in your setup files) in the Supabase SQL Editor to create the `products`, `tracked_products`, `price_history`, and `scrape_logs` tables.
+   * Ensure you have foreign keys set up with `ON DELETE CASCADE`.
+
+3. **Start the Backend:**
+   ```bash
+   cd backend
+   npm install
+   npx playwright install chromium
+   npm start
+   ```
+
+4. **Start the Frontend:**
+   Open a new terminal window:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+   The application will be available at `http://localhost:5173`.
+
+---
+
+## Scraping Schedule
+
+The automated scraping is configured to run **every 2 hours**. 
+
+Because free-tier hosting environments (like Render) spin down servers after 15 minutes of inactivity, we do not rely on an internal Node.js `setInterval` loop. 
+
+Instead, the scraping schedule is driven by an external service (**cron-job.org**). 
+1. The cron service makes a POST request to the backend's `/api/cron/scrape` endpoint every 2 hours.
+2. The request is secured via a Bearer token that matches the `CRON_SECRET` environment variable.
+3. The backend immediately responds with a `200 OK` (to prevent HTTP timeouts) and safely executes the Playwright scraping loop for all active tracked products in the background.
