@@ -49,13 +49,11 @@ export default function SearchPanel({ onTracked, trackedProducts = [], onSelect 
   }
 
   async function handleTrack(product) {
-    clearSearch();
     setTracking((t) => ({ ...t, [product.id]: "loading" }));
     try {
       const trackedData = await trackProduct(product.id);
       
       setTracking((t) => ({ ...t, [product.id]: "scraping" }));
-      onTracked();
       
       try {
         await scrapeTrackedProduct(trackedData.id);
@@ -64,7 +62,10 @@ export default function SearchPanel({ onTracked, trackedProducts = [], onSelect 
       }
       
       setTracking((t) => ({ ...t, [product.id]: "done" }));
+      
+      // Update table and clear search only AFTER initial scrape is done
       onTracked();
+      clearSearch();
       
     } catch (err) {
       setTracking((t) => ({ ...t, [product.id]: "error" }));
@@ -122,7 +123,8 @@ export default function SearchPanel({ onTracked, trackedProducts = [], onSelect 
                     disabled={state === "loading" || state === "scraping" || isTracked}
                   >
                     {isTracked ? "Tracked" :
-                     state === "loading" || state === "scraping" ? "Tracking..." :
+                     state === "loading" ? "Tracking..." :
+                     state === "scraping" ? "Fetching price..." :
                      state === "error" ? "Retry" :
                      "Track"}
                   </button>
