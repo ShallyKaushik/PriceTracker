@@ -54,27 +54,37 @@ export default function App() {
       </header>
 
       <main className="main">
-        <SearchPanel 
-          onTracked={loadTracked} 
-          trackedProducts={tracked}
-          onSelect={(id) => setSelectedId(id === selectedId ? null : id)}
-        />
+        <div className="layout-grid">
+          <div className="layout-left">
+            <SearchPanel 
+              onTracked={loadTracked} 
+              trackedProducts={tracked}
+              onSelect={(id) => setSelectedId(id === selectedId ? null : id)}
+            />
 
-        {loadingTracked ? (
-          <section className="section">
-            <p className="msg-loading">Loading tracked products...</p>
-          </section>
-        ) : (
-          <TrackedList
-            products={tracked}
-            selectedId={selectedId}
-            onSelect={(id) => setSelectedId(id === selectedId ? null : id)}
-          />
-        )}
+            {loadingTracked ? (
+              <section className="section">
+                <p className="msg-loading">Loading tracked products...</p>
+              </section>
+            ) : (
+              <TrackedList
+                products={tracked}
+                selectedId={selectedId}
+                onSelect={(id) => setSelectedId(id === selectedId ? null : id)}
+              />
+            )}
+          </div>
 
-        {selectedTracked && (
-          <ProductDashboard key={selectedTracked.id} tracked={selectedTracked} />
-        )}
+          <div className="layout-right">
+            {selectedTracked ? (
+              <ProductDashboard key={selectedTracked.id} tracked={selectedTracked} />
+            ) : (
+              <div className="section dashboard-placeholder">
+                <p className="msg-empty">Select a product to view its dashboard.</p>
+              </div>
+            )}
+          </div>
+        </div>
       </main>
 
       <footer className="footer">

@@ -27,7 +27,7 @@ body {
 }
 
 .header-inner {
-  max-width: 960px;
+  max-width: 1400px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -59,14 +59,52 @@ body {
 }
 
 .main {
-  max-width: 960px;
+  max-width: 1400px;
   width: 100%;
   margin: 0 auto;
   padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
   flex: 1;
+}
+
+.layout-grid {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.layout-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.layout-right {
+  flex: 1;
+  min-width: 0;
+  position: sticky;
+  top: 20px;
+}
+
+.dashboard-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #64748b;
+}
+
+@media (max-width: 900px) {
+  .layout-grid {
+    flex-direction: column;
+  }
+  .layout-right {
+    position: static;
+  }
 }
 
 .footer {
